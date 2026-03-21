@@ -34,7 +34,7 @@ I AM not responsible for what you do with this client.
 ### 1. Clone & Install
 ```
 Clone this repository (or just copy the file).
-git clone [https://github.com/dbfrs/sb-go]
+git clone [https://github.com/eiey/sb-go]
 cd sb-go
 ```
 ### 3. Install dependencies
